@@ -22,13 +22,13 @@ O saldo da conta deve ser calculado a partir do saldo inicial, aplicando cada um
 Uma conta pode assumir um valor negativo e não existe limite inferior para o saldo da conta. Entretanto, cada transação de débito que termina deixando o saldo da conta negativo implica uma multa de R$ 3,00 a ser descontada imediatamente. Esta multa é aplicada independentemente da conta estar ou não com saldo negativo antes da transação, porém se a transação for um depósito a multa não se aplica. As transações devem ser processadas na ordem em que são apresentadas no arquivo de entrada.
 Exemplo:
 - Criação da conta:
- -- Saldo inicial da conta 123: R$ 100,00;
+   - Saldo inicial da conta 123: R$ 100,00;
 - Primeira movimentação:
- -- Débito de R$ 103,00 da conta 123;
- --  Saldo atual da conta 123: R$ -6,00 (R$ 3,00 de multa aplicado);
+   - Débito de R$ 103,00 da conta 123;
+   -  Saldo atual da conta 123: R$ -6,00 (R$ 3,00 de multa aplicado);
 - Segunda movimentação:
- -- Débito de R$ 10,00 da conta 123;
- -- Saldo atual da conta 123: R$ -19,00 (R$ 3,00 de multa aplicado);
+    - Débito de R$ 10,00 da conta 123;
+    - Saldo atual da conta 123: R$ -19,00 (R$ 3,00 de multa aplicado);
 ## Saída
 A saída deve ser exibida na tela (stdout).
 - ID da conta (int);
