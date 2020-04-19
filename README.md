@@ -30,7 +30,7 @@ Exemplo:
     - Débito de R$ 10,00 da conta 123;
     - Saldo atual da conta 123: R$ -19,00 (R$ 3,00 de multa aplicado);
 ## Saída
-A saída deve ser exibida na tela (stdout).
+A saída deve ser exibida na tela (stdout). Deve ser uma lista de todas as contas no seguinte formato por linha:
 - ID da conta (int);
 - Saldo final da conta, em centavos de real (numérico).
   Ex: 123,37742 (Saldo final de R$ 377,42 na conta 123).
