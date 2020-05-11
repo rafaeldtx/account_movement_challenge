@@ -4,7 +4,7 @@ namespace :transaction_csv do
   task :import, [:transaction_file] => :environment do |i, param|
     puts "Importando transações de 'transactions.csv' para base de dados...\n\n"
 
-    csv_transactions = Rails.root.join('lib/tasks', param[:transaction_file])
+    csv_transactions = Rails.root.join('db', param[:transaction_file])
     CSV.read(csv_transactions).each do |transaction|
       account = Account.find_by!(number: transaction[0])
       new_transaction = Transaction.new(

@@ -4,7 +4,7 @@ namespace :account_csv do
   task :import, [:account_file] => :environment do |i, param|
     puts "Importando contas de #{param[:account_file]} para base de dados... \n\n"
 
-    csv_accounts = Rails.root.join('lib/tasks', param[:account_file])
+    csv_accounts = Rails.root.join('db', param[:account_file])
     CSV.read(csv_accounts).each do |account|
       if Account.find_by(number: account[0])
         puts "Conta #{account[0]} já encontra-se em nossa base de dados \n\n"
