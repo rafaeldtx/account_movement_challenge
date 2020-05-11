@@ -3,7 +3,7 @@ services:
   web:
     build: .
     entrypoint: rails s -b 0.0.0.0
-    container_name: account-movement-challenge
+    container_name: account_movement_challenge
     ports:
       - 3000:3000
     volumes:
