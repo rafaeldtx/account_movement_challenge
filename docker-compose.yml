@@ -7,7 +7,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - .:/account-movement-challenge-data
+      - .:/account_movement_challenge
     tty: true
     stdin_open: true
     depends_on:
