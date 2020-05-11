@@ -1,35 +1,27 @@
 require 'csv'
 
 namespace :transaction_csv do
-  task :import => :environment do
+  task :import, [:transaction_file] => :environment do |i, param|
     puts "Importando transações de 'transactions.csv' para base de dados...\n\n"
 
-    CSV.read("lib/tasks/transactions.csv").each do |transaction|
+    csv_transactions = Rails.root.join('lib/tasks', param[:transaction_file])
+    CSV.read(csv_transactions).each do |transaction|
       account = Account.find_by!(number: transaction[0])
       new_transaction = Transaction.new(
         account: account,
         amount: transaction[1]
       )
-      penalty_value = 300
 
       account.amount += transaction[1].to_i
 
-
-      penalty = ''
+      penalty_value = 300
       if transaction[1].to_i < 0 && account.amount < 0
         account.amount -= penalty_value
         new_transaction.amount -= penalty_value
-
-        penalty = "(Multa R$ #{penalty_value/100} aplicada)"
       end
 
       new_transaction.save!
       account.save!
-
-      puts "- Transação: R$ #{new_transaction.amount/100}."
-      puts "  Saldo atual da conta #{account.number}: " +
-           "R$ #{account.amount/100} #{penalty} \n\n"
-
     rescue ActiveRecord::RecordInvalid
       puts "- Não foi possível realizar transação para conta: #{transaction[0]}"
       puts '  ERROS:'
@@ -39,5 +31,7 @@ namespace :transaction_csv do
     rescue ActiveRecord::RecordNotFound
       puts "- Ops! Conta #{transaction[0]} informada não existe. \n\n"
     end
+
+    puts "Importação finalizada.\n\n"
   end
 end
