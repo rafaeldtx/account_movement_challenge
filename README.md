@@ -1,45 +1,146 @@
-# Desafio de Movimentação de Contas
-## Objetivo
-Desenvolver uma aplicação em linha de comando, em Ruby, que calcule o balanço da conta corrente dos clientes.
-## Execução
-A aplicação deve receber dois parâmetros na linha de comando: o nome do arquivo de contas e o nome do arquivo de transações.
-Ex: ./contas.csv transacoes.csv
-## Entrada
-Os arquivos de entrada devem estar em formato CSV, sem cabeçalho, sem aspas e com campos delimitados por vírgula.
-## Conteúdo dos arquivos
-### Contas:
-- Número da conta (inteiro)
-- Saldo inicial da conta, em centavos de real (inteiro)
- Exemplo:  **123,13052** (Conta: 123, Saldo Inicial: R$ 130,52)
-### Transações:
-- Número da conta (inteiro)
-- Valor da transação, em centavos de real (inteiro)
-Uma transação com valor negativo é um débito na conta e uma transação com valor positivo é um depósito na conta.
-Exemplo: **123,-5300** (Débito de R$ 53,00 na conta 123)
-Exemplo: **123,350000** (Depósito de R$ 3.500,00 na conta 123)
-### Cálculo do Saldo
-O saldo da conta deve ser calculado a partir do saldo inicial, aplicando cada uma das transações relacionadas a esta conta. Os débitos devem reduzir o saldo da conta e depósitos devem aumentar o saldo da conta, na medida do valor da transação.
-Uma conta pode assumir um valor negativo e não existe limite inferior para o saldo da conta. Entretanto, cada transação de débito que termina deixando o saldo da conta negativo implica uma multa de R$ 3,00 a ser descontada imediatamente. Esta multa é aplicada independentemente da conta estar ou não com saldo negativo antes da transação, porém se a transação for um depósito a multa não se aplica. As transações devem ser processadas na ordem em que são apresentadas no arquivo de entrada.
-Exemplo:
-- Criação da conta:
-   - Saldo inicial da conta 123: R$ 100,00;
-- Primeira movimentação:
-   - Débito de R$ 103,00 da conta 123;
-   -  Saldo atual da conta 123: R$ -6,00 (R$ 3,00 de multa aplicado);
-- Segunda movimentação:
-    - Débito de R$ 10,00 da conta 123;
-    - Saldo atual da conta 123: R$ -19,00 (R$ 3,00 de multa aplicado);
-## Saída
-A saída deve ser exibida na tela (stdout). Deve ser uma lista de todas as contas no seguinte formato por linha:
-- ID da conta (int);
-- Saldo final da conta, em centavos de real (numérico).
-  Ex: 123,37742 (Saldo final de R$ 377,42 na conta 123).
-## Entrega do projeto
-- Você deverá utilizar Ruby como linguagem de programação, e o uso de frameworks e gems ficará por sua conta!
-- Seu projeto deverá ser entrege através do github, em um repositório público ou privado, na sua própria conta do github. Depois envie o link dele para nós. Se você fez eu um repositório privado, dê acesso de leitura para os usuários: *@noelrocha*, *@agramms*, *@silviolrjunior* e *@Marcovecchio*. Se não conseguir compartilhar para todos, compartilhe para pelo menos dois destes usuários.
-- Sua solução deverá conter um arquivo README.md com as instruções de como executar o código
-## Opcionais ( mas dá pontos extras! )
-- Utilizar **Docker** / **Docker Compose** para que sua aplicação possa ser executada dentro de containeres, e o setup do ambiente seja facilitado.
-- Se você utilizou gemas ou libs, explicar por que você decidiu utilizá-las.
-- Sinta-se à vontade para utilizar banco de dados no projeto, para nos mostrar seu conhecimento no assunto, juntamente com ActiveRecord, migrations e o que mais desejar.
-- Mostre a construção do seu projeto! Quanto mais commit melhor!!
+# Desafio - Movimentação de Contas
+O sistema consiste em uma aplicação em linha de comando, que realiza o balanço de contas baseados em arquivos csv.
+
+## Como executar
+
+### Requesitos do sistema
+- Ruby ([ruby](https://www.ruby-lang.org/pt/downloads/ "ruby"))
+- Docker/Docker-compose ([docker](https://docs.docker.com/engine/install "docker") / [docker-compose](https://docs.docker.com/compose/install/ "docker-compose"))
+- MySQL ([mysql](https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/ "mysql"))
+
+### Utilizando Docker e atribuindo banco de dados
+
+Dentro da pasta do projeto, acesse o terminal e execute os seguintes comandos a seguir:
+
+construa a imagem dos containers
+```
+$ docker-compose build
+```
+
+Execute os containers em background liberando acesso ao terminal
+```
+$ docker-compose up -d
+```
+Acesse o terminal ativo do container **"account_movement_challenge"**
+```
+$ docker exec -it account_movement_challenge bash
+```
+Crie o banco de dados e execute as migrações
+```
+$ rails db:create db:migrate
+```
+
+## Rodando testes
+Ainda dentro do terminal do container, é possível executar os testes e garantir o funcionamento da aplicação
+```
+$ bundle exec rspec
+```
+
+## Funcionalidades
+O sistema consiste em poder realizar a importação via linha de comando. Desta forma, foi implementado o uso de tasks utilizando Ruby on Rails.
+
+**OBS**: Os arquivos para importação mencionados se encontram dentro da pasta 'db' do projeto
+
+### Importação em conjunto e exibição de saldo final
+Executa a importação de contas e transações e em sequência exibe o saldo das contas atualizado
+
+#### Executando comando de importação
+```
+$ rails "csv_import:files[accounts.csv, transactions.csv]"
+```
+
+#### Saída esperada
+```
+Importando contas de accounts.csv para base de dados...
+
+Importação finalizada.
+
+-------------------------------
+
+Importando transações de 'transactions.csv' para base de dados...
+
+Importação finalizada.
+
+-------------------------------
+
+- Saldo atual da conta 12345: R$ 960
+
+- Saldo atual da conta 54321: R$ 5325
+
+- Saldo atual da conta 67891: R$ 350
+
+- Saldo atual da conta 19876: R$ 1375
+```
+
+### Importação de contas
+Executa a importação apenas de contas
+
+#### Executando comando de importação
+```
+$ rails "account_csv_:import[accounts.csv]"
+```
+
+**Saída esperada**
+```
+Importando contas de accounts.csv para base de dados...
+
+Importação finalizada.
+```
+
+**Saída excepcional**
+```
+Importando contas de accounts.csv para base de dados...
+
+Conta 12345 já encontra-se em nossa base de dados
+
+Conta 54321 já encontra-se em nossa base de dados
+
+Conta 67891 já encontra-se em nossa base de dados
+
+Conta 19876 já encontra-se em nossa base de dados
+
+Importação finalizada.
+```
+
+### Importação de transações
+Executa a importação de contas
+
+#### Executando comando de importação
+```
+$ rails "transaction_csv_:import[transactions.csv]"
+```
+
+**Saída esperada**
+```
+Importando contas de accounts.csv para base de dados...
+
+Importação finalizada.
+```
+
+### Exibição de saldos
+Exibe o saldo das contas já importadas
+
+#### Executando comando
+```
+$ rails account_csv:show_all_amounts
+```
+
+**Saída esperada**
+```
+- Saldo atual da conta 12345: R$ 960
+
+- Saldo atual da conta 54321: R$ 5325
+
+- Saldo atual da conta 67891: R$ 350
+
+- Saldo atual da conta 19876: R$ 1375
+```
+
+## Progresso do projeto
+
+- [x] Setup do Docker
+- [x] Setup do banco
+- [x] Criação de Model e Migrations
+- [x] Criação de endpoints
+- [x] Criação de tasks
+- [x] Testes unitários
